@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进制转换教学</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>进制转换教学</h1>
+        
+        <div class="converter-box">
+            <div class="input-section">
+                <input type="text" id="numberInput" placeholder="输入数字">
+                <select id="fromBase">
+                    <option value="2">二进制</option>
+                    <option value="8">八进制</option>
+                    <option value="10" selected>十进制</option>
+                    <option value="16">十六进制</option>
+                </select>
+                <span>转换为</span>
+                <select id="toBase">
+                    <option value="2">二进制</option>
+                    <option value="8">八进制</option>
+                    <option value="10">十进制</option>
+                    <option value="16" selected>十六进制</option>
+                </select>
+                <button onclick="convert()">转换</button>
+            </div>
+            
+            <div class="result-section">
+                <h3>转换结果：</h3>
+                <div id="result"></div>
+                <div id="explanation" class="explanation"></div>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h2>进制转换方法说明</h2>
+            
+            <div class="method-box">
+                <h3>十进制转二进制方法</h3>
+                <p>使用除2取余法，步骤如下：</p>
+                <ol>
+                    <li>将十进制数除以2，得到商和余数</li>
+                    <li>记下余数（0或1）</li>
+                    <li>继续用商除以2，直到商为0</li>
+                    <li>将得到的余数从下往上排列即为二进制数</li>
+                </ol>
+                <div class="example">
+                    <p>例如：将十进制数13转换为二进制</p>
+                    <pre>
+13 ÷ 2 = 6 余 1
+6 ÷ 2 = 3 余 0
+3 ÷ 2 = 1 余 1
+1 ÷ 2 = 0 余 1
+从下往上读余数：1101
+所以13的二进制是1101</pre>
+                </div>
+            </div>
+
+            <div class="method-box">
+                <h3>二进制转十进制方法</h3>
+                <p>使用权重相加法，步骤如下：</p>
+                <ol>
+                    <li>从右往左给每一位标上序号，从0开始</li>
+                    <li>每一位的权重是2的序号次方</li>
+                    <li>将每一位数字与其权重相乘</li>
+                    <li>将所有结果相加即为十进制数</li>
+                </ol>
+                <div class="example">
+                    <p>例如：将二进制1101转换为十进制</p>
+                    <pre>
+1101 = 1×2³ + 1×2² + 0×2¹ + 1×2⁰
+     = 1×8 + 1×4 + 0×2 + 1×1
+     = 8 + 4 + 0 + 1
+     = 13</pre>
+                </div>
+            </div>
+
+            <div class="method-box">
+                <h3>八进制转换方法</h3>
+                <p>八进制与二进制的关系：每3位二进制数对应1位八进制数</p>
+                <ol>
+                    <li>二进制转八进制：将二进制数从右往左每三位分成一组，不足三位补0，每组转换成对应的八进制数</li>
+                    <li>八进制转二进制：将每位八进制数转换为对应的三位二进制数</li>
+                </ol>
+                <div class="example">
+                    <p>例如：二进制 1011010 转换为八进制</p>
+                    <pre>
+001 | 011 | 010
+ 1  |  3  |  2
+因此 1011010(2) = 132(8)</pre>
+                </div>
+            </div>
+
+            <div class="method-box">
+                <h3>十六进制转换方法</h3>
+                <p>十六进制使用0-9和A-F表示16个数字（A=10, B=11, C=12, D=13, E=14, F=15）</p>
+                <ol>
+                    <li>二进制转十六进制：将二进制数从右往左每四位分成一组，不足四位补0，每组转换成对应的十六进制数</li>
+                    <li>十六进制转二进制：将每位十六进制数转换为对应的四位二进制数</li>
+                </ol>
+                <div class="example">
+                    <p>例如：二进制 11010110 转换为十六进制</p>
+                    <pre>
+1101 | 0110
+ D   |  6
+因此 11010110(2) = D6(16)</pre>
+                </div>
+            </div>
+
+            <div class="method-box">
+                <h3>快速转换技巧</h3>
+                <p>进制转换的一些实用技巧：</p>
+                <ul>
+                    <li>二进制、八进制、十六进制之间可以通过分组方式快速转换</li>
+                    <li>记住常用的对应关系：
+                        <pre>
+二进制    0000 0001 0010 0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111
+十六进制   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+八进制     0    1    2    3    4    5    6    7    10   11   12   13   14   15   16   17</pre>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function convert() {
+            const number = document.getElementById('numberInput').value;
+            const fromBase = parseInt(document.getElementById('fromBase').value);
+            const toBase = parseInt(document.getElementById('toBase').value);
+            
+            // 检查输入是否包含小数点
+            if (number.includes('.')) {
+                const [intPart, fracPart] = number.split('.');
+                
+                // 转换整数部分
+                let decimalIntPart = parseInt(intPart, fromBase);
+                
+                // 转换小数部分
+                let decimalFracPart = 0;
+                if (fracPart) {
+                    decimalFracPart = convertFractionToDecimal(fracPart, fromBase);
+                }
+                
+                // 合并整数和小数部分
+                let decimal = decimalIntPart + decimalFracPart;
+                
+                // 转换为目标进制
+                let result = convertDecimalToBase(decimal, toBase);
+                
+                document.getElementById('result').textContent = result.toUpperCase();
+                
+                // 显示转换过程
+                let explanation = `转换过程：\n`;
+                if (fromBase !== 10) {
+                    explanation += `1. ${number}(${fromBase}进制) 转换为十进制：\n`;
+                    explanation += `整数部分：\n`;
+                    explanation += generateToDecimalExplanation(intPart, fromBase);
+                    if (fracPart) {
+                        explanation += `\n小数部分：\n`;
+                        explanation += generateFractionExplanation(fracPart, fromBase);
+                    }
+                }
+                if (toBase !== 10) {
+                    explanation += `\n2. ${decimal}(十进制) 转换为${toBase}进制：\n`;
+                    explanation += generateFromDecimalExplanation(decimal, toBase, true);
+                }
+                
+                document.getElementById('explanation').innerHTML = explanation.replace(/\n/g, '<br>');
+            } else {
+                // 原有的整数转换逻辑保持不变
+                let decimal = parseInt(number, fromBase);
+                let result = decimal.toString(toBase);
+                
+                document.getElementById('result').textContent = result.toUpperCase();
+                
+                let explanation = `转换过程：\n`;
+                if (fromBase !== 10) {
+                    explanation += `1. ${number}(${fromBase}进制) 转换为十进制：\n`;
+                    explanation += generateToDecimalExplanation(number, fromBase);
+                }
+                if (toBase !== 10) {
+                    explanation += `\n2. ${decimal}(十进制) 转换为${toBase}进制：\n`;
+                    explanation += generateFromDecimalExplanation(decimal, toBase);
+                }
+                
+                document.getElementById('explanation').innerHTML = explanation.replace(/\n/g, '<br>');
+            }
+        }
+
+        // 将分数部分转换为十进制
+        function convertFractionToDecimal(fracPart, fromBase) {
+            let decimal = 0;
+            for (let i = 0; i < fracPart.length; i++) {
+                let digit = parseInt(fracPart[i], fromBase);
+                decimal += digit * Math.pow(fromBase, -(i + 1));
+            }
+            return decimal;
+        }
+
+        // 生成小数部分转换说明
+        function generateFractionExplanation(fracPart, fromBase) {
+            let explanation = '';
+            let sum = 0;
+            
+            for (let i = 0; i < fracPart.length; i++) {
+                let digit = parseInt(fracPart[i], fromBase);
+                let value = digit * Math.pow(fromBase, -(i + 1));
+                sum += value;
+                explanation += `${digit} × ${fromBase}^-${i + 1} = ${value}\n`;
+            }
+            
+            explanation += `小数部分总和 = ${sum}`;
+            return explanation;
+        }
+
+        // 将十进制转换为目标进制（支持小数）
+        function convertDecimalToBase(decimal, toBase) {
+            // 分离整数和小数部分
+            let intPart = Math.floor(decimal);
+            let fracPart = decimal - intPart;
+            
+            // 转换整数部分
+            let intResult = intPart.toString(toBase).toUpperCase();
+            
+            // 如果没有小数部分，直接返回整数结果
+            if (fracPart === 0) {
+                return intResult;
+            }
+            
+            // 转换小数部分（保留8位小数）
+            let fracResult = '.';
+            const precision = 8;
+            for (let i = 0; i < precision && fracPart !== 0; i++) {
+                fracPart *= toBase;
+                let digit = Math.floor(fracPart);
+                fracResult += digit.toString(toBase).toUpperCase();
+                fracPart -= digit;
+            }
+            
+            return intResult + fracResult;
+        }
+
+        // 生成十进制转目标进制的说明（支持小数）
+        function generateFromDecimalExplanation(decimal, toBase, includesFraction = false) {
+            let explanation = '';
+            let intPart = Math.floor(decimal);
+            let fracPart = decimal - intPart;
+            
+            // 整数部分说明
+            explanation += '整数部分：\n';
+            let quotient = intPart;
+            let remainders = [];
+            
+            while (quotient > 0) {
+                let remainder = quotient % toBase;
+                remainders.push(remainder);
+                explanation += `${quotient} ÷ ${toBase} = ${Math.floor(quotient/toBase)} 余 ${remainder}\n`;
+                quotient = Math.floor(quotient/toBase);
+            }
+            
+            let intResult = remainders.reverse().map(r => r.toString(toBase).toUpperCase()).join('');
+            explanation += `整数部分结果：${intResult}\n`;
+            
+            // 如果有小数部分，添加小数部分说明
+            if (fracPart > 0 && includesFraction) {
+                explanation += '\n小数部分：\n';
+                let currentFrac = fracPart;
+                let fracDigits = [];
+                
+                for (let i = 0; i < 8 && currentFrac !== 0; i++) {
+                    currentFrac *= toBase;
+                    let digit = Math.floor(currentFrac);
+                    fracDigits.push(digit);
+                    explanation += `${currentFrac.toFixed(8)} = ${digit} + 小数部分\n`;
+                    currentFrac -= digit;
+                }
+                
+                let fracResult = fracDigits.map(d => d.toString(toBase).toUpperCase()).join('');
+                explanation += `小数部分结果：.${fracResult}`;
+            }
+            
+            return explanation;
+        }
+
+        function generateToDecimalExplanation(number, fromBase) {
+            let explanation = '';
+            let digits = number.toString().split('').reverse();
+            let sum = 0;
+            
+            digits.forEach((digit, index) => {
+                let value = parseInt(digit, fromBase) * Math.pow(fromBase, index);
+                sum += value;
+                explanation += `${digit} × ${fromBase}^${index} = ${value}\n`;
+            });
+            
+            explanation += `总和 = ${sum}`;
+            return explanation;
+        }
+    </script>
+</body>
+</html> 
